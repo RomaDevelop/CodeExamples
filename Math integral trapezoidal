@@ -1,0 +1,18 @@
+// вычисление интеграла методом трапеций
+
+float Integral(float f1, float f2, float d, float r)
+{
+float delta=(f2-f1)/100;      // шаг интеграла одна сотая интервала
+
+float s=0;
+float podintegral;
+for(float f=f1; f<f2; f+=delta)
+	{
+	// подинтегральная функция
+	podintegral=Podintegral(f, d, r);  // тут может быть любая функция, в моем случае было вычисления затухания сигнала с частотой f от точки d до r
+
+	s = s + delta * 0.5 * ((podintegral) + (podintegral));
+	}
+
+return s;
+}
