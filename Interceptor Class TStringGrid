@@ -1,0 +1,57 @@
+/*
+Данный класс-перехватчик открывает недоступный и добавляет новый функционал в компонент TStringGrid библиотеки VCL
+*/
+//---------------------------------------------------------------------------
+#ifndef MyGridHPP
+#define MyGridHPP
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+#include <vcl.h>
+#include <Vcl.Grids.hpp>
+#include <Clipbrd.hpp>
+//---------------------------------------------------------------------------
+namespace MyGrid      
+{
+class TStringGrid: public Grids::TStringGrid
+	{
+	public:
+	__fastcall virtual TStringGrid(Classes::TComponent* AOwner) : Grids::TStringGrid(AOwner) { }    // доступ к конструктору по умолчанию
+	using Grids::TStringGrid::InvalidateRow;      // доступ к методу перерисовки строки
+	TInplaceEdit* InplaceEdit() { return InplaceEditor; }   // доступ к редактору текста внутри ячейки
+
+	void ClearGrid();   // очищает все ячейки
+	void LoadGrid(TStringGrid *Grid, bool SetColWidth=false);     // копирует значения и ширину колонок из грида в параметрах                                                      
+	void LoadGrid(String file);         // загружает значения в грид из сохраненного файла                                           
+	void LoadGridCSV(String file);         // загружает значения в грид из сохраненного файла *.csv
+	void AddGrid(TStringGrid *Grid);       // добавляет в конец грида значения из грида в параметрах  
+	void SaveGrid(String file);            // сохраняет значения из грида в файл                                                    
+	void SaveGridCSV(String file);         // сохраняет значения из грида в файл *.csv  
+	void Copy();       // копирует выделенные ячейки в буфер обмена (можно после вставить в Word, Excel или др
+	void Cut();        // вырезает выделенные ячейки в буфер обмена (можно после вставить в Word, Excel или др
+	void Paste();      // вставляет в грид значение из буфера обмена (можно скопировать таблицу в Word или Excel и вставить)
+	String GridToStr1(String ColsSlitter, String RowSplitter);  // преобразует грид в строку
+	void GridFromStr(String GridAsStr, String ColsSlitter, String RowSplitter);  // записывает в грид строку
+	bool isRowEmpty(int RowIndex);    // пуста ли строка
+	bool isColHaveUnicleCells(int ColIndex);         // уникальны ли значения в колонке
+	bool DelRow(int RowIndex);   // удаление строки, визуально работает лучше стандартной
+	void DelRowIsEmpty(int RowIndex);   // удаление строки если пустая
+	void DelDuplicatedRows();           // удаление дублирующихся строк
+  void RemoveDuplicatedRows();        // тоже самое, альтернативное название
+	bool DelCol(int ColIndex);          // удаление колонки
+	bool InsertRow(int insertIndex);    // вставляет пустую строку по указанному индексу
+	bool InsertRow(int insertIndex, TStrings *InsertValues);          // вставляет строку по указанному индексу и вписывает значения
+	bool InsertRow(int insertIndex, String InsertValues, String Splitter);          // вставляет строку по указанному индексу и вписывает значения
+	void SwapRows(int RowIndex1, int RowIndex2);           // меняет 2 строки местами
+	void MoveRow(int RowIndex, String UP_DOWN);            // двигает строку вверх или вниз
+	void OrderBy(int Col);                                 // сортирует грид по указанной колонке
+
+	void ColWidth();                              // устанавливает равную ширину всем колонкам, чтобы они были на все видимое пространство грида
+	void ColWidth(int *Widths);                   // устанавливает ширину колонкам из переданного указателем массива значений
+	void ColWidthPercent(int *WidthsP);             // устанавливает ширину колонкам из переданного указателем массива значений в процентах от видимого пространства грида
+	void ColWidthResize();                          // вызывается при изменении видимых размеров грида и сужает или расширяет колонки
+
+	void SelectCellOnMouse(int visibleCol, TPoint &MousePos);  // выделяет ячейку на которую наведена мышь
+	};
+};
+#define TStringGrid MyGrid::TStringGrid
+//---------------------------------------------------------------------------
