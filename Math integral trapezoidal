@@ -1,18 +1,21 @@
 // вычисление интеграла методом трапеций
-
-float Integral(float f1, float f2, float d, float r)
+// подинтегральная функция передается указателем
+float integral(float x1, float x2, float shag, float(*podintegral_func)(float))
 {
-float delta=(f2-f1)/100;      // шаг интеграла одна сотая интервала
-
 float s=0;
 float podintegral;
-for(float f=f1; f<f2; f+=delta)
+for(float x=x1; x<x2; x+=shag)
 	{
-	// подинтегральная функция
-	podintegral=Podintegral(f, d, r);  // тут может быть любая функция, в моем случае было вычисления затухания сигнала с частотой f от точки d до r
-
-	s = s + delta * 0.5 * ((podintegral) + (podintegral));
+	s = s + shag * 0.5 * ((podintegral_func(x)) + (podintegral_func(x + shag)));
 	}
-
 return s;
+}
+
+// пример вызова функции
+float kvadrat(float x) { return x*x; }
+int main()
+{
+cout<<integral(0,10,1,kvadrat)<<endl;   		// передача указателя на функцию определенную выше
+cout<<integral(0,10,1,[](float x){return x*x;})<<endl;  // передача функции лямбда-выражением
+return 0;
 }
