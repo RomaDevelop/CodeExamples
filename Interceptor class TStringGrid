@@ -42,7 +42,7 @@ class TStringGrid: public Grids::TStringGrid
 	bool DelRow(int RowIndex);   // удаление строки, визуально работает лучше стандартной
 	void DelRowIsEmpty(int RowIndex);   // удаление строки если пустая
 	void DelDuplicatedRows();           // удаление дублирующихся строк
-  void RemoveDuplicatedRows();        // тоже самое, альтернативное название
+  	void RemoveDuplicatedRows();        // тоже самое, альтернативное название
 	bool DelCol(int ColIndex);          // удаление колонки
 	bool InsertRow(int insertIndex);    // вставляет пустую строку по указанному индексу
 	bool InsertRow(int insertIndex, TStrings *InsertValues);          // вставляет строку по указанному индексу и вписывает значения
