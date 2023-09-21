@@ -32,8 +32,8 @@ class TStringGrid: public Grids::TStringGrid
 	void AddGrid(TStringGrid *Grid);       // добавляет в конец грида значения из грида в параметрах  
 	void SaveGrid(String file);            // сохраняет значения из грида в файл                                                    
 	void SaveGridCSV(String file);         // сохраняет значения из грида в файл *.csv  
-	void Copy();       // копирует выделенные ячейки в буфер обмена (можно после вставить в Word, Excel или др
-	void Cut();        // вырезает выделенные ячейки в буфер обмена (можно после вставить в Word, Excel или др
+	void Copy();       // копирует выделенные ячейки в буфер обмена (можно после вставить в Word, Excel или др)
+	void Cut();        // вырезает выделенные ячейки в буфер обмена (можно после вставить в Word, Excel или др)
 	void Paste();      // вставляет в грид значение из буфера обмена (можно скопировать таблицу в Word или Excel и вставить)
 	String GridToStr1(String ColsSlitter, String RowSplitter);  // преобразует грид в строку
 	void GridFromStr(String GridAsStr, String ColsSlitter, String RowSplitter);  // записывает в грид строку
