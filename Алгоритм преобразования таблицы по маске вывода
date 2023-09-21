@@ -1,0 +1,115 @@
+/* 
+Алгоритм преобразования таблицы по маске вывода
+фрагмент функции CreateOutputGrid из проекта Device
+маска вывода позволяет объединить несколько столбцов в один, добавить текст, кавычки, пометки, удалить необязательные элементы, пробелы.
+Например маска [tip firma model][sn][(=interFace=отсутсвует=)][primech] осуществляет объединение столбцов tip firma model, а в пустое значение в колонке interFace будет заменено на "отсутсвует".
+*/
+
+String output_1col_setting;
+String output_1col_every_row;
+while(output_cols_setting.Pos("["))
+	{  // поочередно выделяем колонки
+	output_1col_setting=MyStr::SubStrBE(output_cols_setting,2,output_cols_setting.Pos("]")-1);
+	output_cols_setting.Delete(1,1+output_1col_setting.Length()+1);
+
+	bool countFind=output_1col_setting.Pos(Constants::Output_count());
+	bool C_CC=output_1col_setting.Pos(Constants::Output_C_CC());
+
+	StringGridOutput->ColCount++;
+	for(int r=0; r<StringGridOutput->RowCount; r++)
+		{
+		output_1col_every_row=output_1col_setting;
+		bool delete_ifEmpty=false;
+		bool pasted_in_delete_ifEmpty=false;
+		bool tip_poc_in_col=false;
+		if(A_AA)     // если нужна колонка со степенью значимости
+			{
+			String cat;
+			if(StringGridOutput->Cells[col_index::klass][r]=="ВТСС") cat="-";
+				else if(StringGridOutput->Cells[col_index::kategor][r]=="2") cat="AA";
+					else if(StringGridOutput->Cells[col_index::kategor][r]=="3") cat="A";
+						else cat="error";
+			output_1col_every_row=MyStr::FindReplace(output_1col_every_row, Constants::Output_A_AA(), cat, 0);
+			}
+		for(int c=0; c<StringGridDevice->ColCount; c++) // перебираем названия полей
+			{
+			if(output_1col_every_row.Pos(StringGridDevice->Cells[col_index::tip][0])) tip_poc_in_col=true;
+			int CapPos=output_1col_every_row.Pos(StringGridDevice->Cells[c][0]);
+			if(CapPos)  // если в колонке содержится название поля
+				{
+				if(countFind)    // если в колонке нужен подсчет, подсчет возможен только для устройства
+					{
+					if(c==col_index::szz2 && isYstroystvo(r,StringGridOutput))
+						{
+						int count_szz=CountForYstrForCol(origOrdTS->Strings[r], col_index::szz2, 1);
+						StringGridOutput->Cells[c][r]=ItS(count_szz);
+						// если нужно вместо 0 ставим -
+						if(szz_zam && !count_szz)
+							StringGridOutput->Cells[c][r]="-";
+
+						}
+					if(c==col_index::szzk2 && isYstroystvo(r,StringGridOutput))
+						{
+						int count_szz=CountForYstrForCol(origOrdTS->Strings[r], col_index::szzk2, 1);
+						StringGridOutput->Cells[c][r]=ItS(count_szz);
+						// если нужно вместо 0 ставим -
+						if(szz_zam && !count_szz)
+							StringGridOutput->Cells[c][r]="-";
+						}
+					output_1col_every_row=MyStr::FindReplace(output_1col_every_row, Constants::Output_count(), "", 0);
+					}
+
+				int begPos=output_1col_every_row.Pos("(_(");
+				int endPos=output_1col_every_row.Pos(")_)");
+				if(CapPos>begPos && CapPos<endPos)  // если название поля находится между скобками
+					{
+					delete_ifEmpty=true;            // ставим что это удаляемый фрагмент
+					if(StringGridOutput->Cells[c][r]!="")  // если это удаляемый фрагмент, и вставляемое значение не пусто
+						pasted_in_delete_ifEmpty=true;                 // ставим, что было вставлено значение
+					}
+
+				// заменяем в этом поле название поля на значение
+				output_1col_every_row=MyStr::FindReplace(output_1col_every_row, StringGridDevice->Cells[c][0], StringGridOutput->Cells[c][r], 1);
+				}
+			}
+
+		int begPos=output_1col_every_row.Pos("(_(");
+		int endPos=output_1col_every_row.Pos(")_)");
+		if(delete_ifEmpty && !pasted_in_delete_ifEmpty)       // если в удаляемый фрагмент не было вставлено значений - удаляем все между скобками
+			{
+			output_1col_every_row.Delete(begPos, endPos+3-begPos);
+			if(output_1col_every_row.Pos("(="))
+				{
+				String paste=MyStr::SubStrBE(output_1col_every_row,output_1col_every_row.Pos("(=")+2,output_1col_every_row.Length());
+				paste=paste.SubString(1,paste.Pos("=)")-1);
+				output_1col_every_row=paste;
+				}
+			}
+
+		begPos=output_1col_every_row.Pos("(_(");
+		endPos=output_1col_every_row.Pos(")_)");
+		if(begPos && endPos)   // если остались скобки - удаляем
+			{ output_1col_every_row.Delete(endPos, 3); output_1col_every_row.Delete(begPos, 3);  }
+
+		begPos=output_1col_every_row.Pos("(=");
+		endPos=output_1col_every_row.Pos("=)");
+		if(begPos && endPos)   // если остались скобки - удаляем
+			{ output_1col_every_row.Delete(begPos, endPos-begPos+2);  }
+
+		// если надо - добавляем в составе:
+		if(output_components && add_vSostave && tip_poc_in_col)
+			if(isYstroystvo(r,StringGridOutput))
+				if(!isYstroystvo(r+1,StringGridOutput) && r+1<StringGridOutput->RowCount) // если след строка это компонент (т.е. есть хотябы один компонент)
+					output_1col_every_row=output_1col_every_row+" в составе:";
+
+    // удаляем лишние пробелы (в кавычках, в начале, в конце, два подряд)
+			{
+			output_1col_every_row=Del_space_in_quotes(output_1col_every_row);
+			while(output_1col_every_row!="" && output_1col_every_row[1]==' ') output_1col_every_row.Delete(1,1);
+			while(output_1col_every_row!="" && output_1col_every_row[output_1col_every_row.Length()]==' ') output_1col_every_row.Delete(output_1col_every_row.Length(),1);
+			while(output_1col_every_row.Pos("  ")) output_1col_every_row.Delete(output_1col_every_row.Pos("  "),1);
+			}
+
+		StringGridOutput->Cells[StringGridOutput->ColCount-1][r]=output_1col_every_row;
+		}
+	}
