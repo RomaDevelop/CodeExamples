@@ -2,7 +2,6 @@
 // подинтегральная функция передается указателем
 float integral(float x1, float x2, float shag, float(*podintegral_func)(float)){
 	float s=0;
-	float podintegral;
 	for(float x=x1; x<x2; x+=shag){
 		s = s + shag * 0.5 * ((podintegral_func(x)) + (podintegral_func(x + shag)));
 	}
