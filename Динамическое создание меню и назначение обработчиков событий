@@ -1,0 +1,34 @@
+void CreateFuncs()
+{
+TStringGrid *Grid=new TStringGrid(Form1);
+Grid->GridFromStr(Form1->StgsEditFuncs->Text,"[funcC]","[funcR]");
+MenuFuncs::Count=Grid->RowCount-1;
+MenuFuncs::MItems=new TMenuItem *[MenuFuncs::Count];
+
+for(int i=0; i<MenuFuncs::Count; i++)
+	{
+	MenuFuncs::MItems[i] = new TMenuItem(Form1->PopupMenuFuncs);
+	Form1->PopupMenuFuncs->Items->Add(MenuFuncs::MItems[i]);
+
+	int r=i+1;
+	MenuFuncs::MItems[i]->Caption = Grid->Cells[0][r];
+	MenuFuncs::MItems[i]->Hint = Grid->Cells[1][r]+"[func]"+Grid->Cells[2][r]+"[func]";
+	MenuFuncs::MItems[i]->OnClick = Form1->N_forFunc->OnClick;
+
+	TButton *BtnFunc=(TButton *)Form1->FindComponent("ButtonFunc"+ItS(i+1));
+	if(BtnFunc!=NULL)
+		{
+		BtnFunc->Caption = Grid->Cells[0][r];
+		BtnFunc->Hint = Grid->Cells[1][r]+"[func]"+Grid->Cells[2][r]+"[func]";
+		BtnFunc->OnClick = Form1->ButtonFunc1->OnClick;
+		BtnFunc->Width=Form1->Canvas->TextWidth(BtnFunc->Caption) + 20;
+
+		BtnFunc->Visible=true;
+		if(BtnFunc->Left+BtnFunc->Width > Form1->Width-30)
+			BtnFunc->Visible=false;
+		}
+	}
+
+delete Grid;
+MenuFuncs::Created=true;
+}
