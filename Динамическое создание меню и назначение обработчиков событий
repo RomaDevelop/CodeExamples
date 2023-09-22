@@ -1,9 +1,13 @@
+// функция из проекта Notes - виджета для рабочего стола
+// функция создаёт Нужное количество элементов меню из настроек и назначает им обработчик событий.
+// а также настраивает отображаемые кнопки - Caption, Width(исходя из длины Caption)
+
 void CreateFuncs()
 {
-TStringGrid *Grid=new TStringGrid(Form1);
+TStringGrid *Grid=new TStringGrid(Form1);  // очистка памяти при перед завершением функции
 Grid->GridFromStr(Form1->StgsEditFuncs->Text,"[funcC]","[funcR]");
 MenuFuncs::Count=Grid->RowCount-1;
-MenuFuncs::MItems=new TMenuItem *[MenuFuncs::Count];
+MenuFuncs::MItems=new TMenuItem *[MenuFuncs::Count];  // очистка памяти при завершении функции или при изменении настроек
 
 for(int i=0; i<MenuFuncs::Count; i++)
 	{
