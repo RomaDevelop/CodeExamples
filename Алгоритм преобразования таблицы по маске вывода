@@ -4,7 +4,7 @@
 маска вывода позволяет объединить несколько столбцов в один, добавить текст, кавычки, пометки, удалить необязательные элементы, пробелы.
 Например маска 
 [tip firma model][sn][(=interFace=отсутсвует=)][primech] 
-осуществляет объединение столбцов tip firma model, а пустое значение в колонке interFace будет заменено на "отсутсвует".
+осуществляет объединение столбцов tip firma model в один, а пустое значение в колонке interFace будет заменено на "отсутсвует".
 */
 
 String output_1col_setting;
@@ -24,7 +24,7 @@ while(output_cols_setting.Pos("["))
 		bool delete_ifEmpty=false;
 		bool pasted_in_delete_ifEmpty=false;
 		bool tip_poc_in_col=false;
-		if(A_AA)     // если нужна колонка со степенью значимости
+		if(A_AA)     // если нужна колонка со степенью значимости (A_AA определено выше)
 			{
 			String cat;
 			if(StringGridOutput->Cells[col_index::klass][r]=="ВТСС") cat="-";
