@@ -21,7 +21,9 @@ namespace MyGrid
 class TStringGrid: public Grids::TStringGrid
 	{
 	public:
-	__fastcall virtual TStringGrid(Classes::TComponent* AOwner) : Grids::TStringGrid(AOwner) { }    // доступ к конструктору по умолчанию
+	// доступ к конструктору по умолчанию. Интересная особенность VCL, поскольку она основана на Delphi конструкторы VCL объектов тут virtual
+	__fastcall virtual TStringGrid(Classes::TComponent* AOwner) : Grids::TStringGrid(AOwner) { }  
+
 	using Grids::TStringGrid::InvalidateRow;      // доступ к методу перерисовки строки
 	TInplaceEdit* InplaceEdit() { return InplaceEditor; }   // доступ к редактору текста внутри ячейки
 
